@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -21,28 +18,18 @@ public class ChatServer {
 	}
 		
 	public void go() {
+		
 		try {
 			System.out.println("Server listening");
-			Socket s = in.accept();
-			System.out.println("Server accepted connection on " + in.getLocalPort() + " ; " + s.getPort() );
-			InputStreamReader r = new InputStreamReader(s.getInputStream());
-			BufferedReader clientIn = new BufferedReader(r);
-			PrintWriter clientOut = new PrintWriter(s.getOutputStream(), true);
-				
-			while(true) {
-				String userInput = clientIn.readLine();
-				clientOut.println(userInput);
-			}		
+			Socket s;
+			while (true) {
+				s = in.accept();
+				new ServerThread(s).start();
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		} 
 	}
 		
 	public static void main(String[] args) {
