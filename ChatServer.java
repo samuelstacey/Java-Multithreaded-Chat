@@ -24,9 +24,9 @@ public class ChatServer {
 			Socket s;
 			while (true) {
 				s = in.accept();
-				new ServerThread(s).start();
+				Thread t = new ServerThread(s); 
+				t.start();//Starts the thread
 			}
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
