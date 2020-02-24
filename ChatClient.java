@@ -8,10 +8,12 @@ import java.net.UnknownHostException;
 public class ChatClient {
 	
 	private Socket server;
+	private Thread t;
 
 	public ChatClient(String address, int port) {
 		try {
-			server = new Socket(address,port);
+			t = new ClientRead(address ,port);
+			server = new Socket(address ,port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -23,13 +25,12 @@ public class ChatClient {
 		try {
 			BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
 			PrintWriter serverOut = new PrintWriter(server.getOutputStream(), true);
-			BufferedReader serverIn = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			
-			while(true) {
+			t.start();
+			
+			while(true) { //Need this to print ASAP currently it only does when the client is active cause its waiting for user input, multithreaded???
 				String userInput = userIn.readLine();
 				serverOut.println(userInput);
-				String serverRes = serverIn.readLine();
-				System.out.println(serverRes);
 			}
 			
 		} catch (IOException e) {
@@ -45,6 +46,23 @@ public class ChatClient {
 	}
 	
 	public static void main(String[] args) {
-		new ChatClient("localhost", 14002).go();
+		int port = 14001;
+		String addr  = "localhost";
+		for (int i=0; i<args.length-1; i++) {
+			if (args[i].equals("-ccp")) {
+				try {
+		            port = Integer.parseInt(args[i + 1]);
+		        } catch (NumberFormatException e) {
+		            System.out.println("Invalid port");
+		        }
+			}
+			else if (args[i].equals("-cca")) {
+				addr = args[i+1];
+			}
+		    else {
+		        System.out.println("Invalid argument");
+		    }
+		}
+		new ChatClient(addr, port).go();
 	}
 }
