@@ -35,7 +35,7 @@ public class ServerThread extends Thread{
 						break;
 				}	
 				server.sendToAll(userInput);
-				Thread.sleep(1000);
+				Thread.sleep(50);
 			}
 		} catch (IOException e1) {
 			System.out.println("Client Disconnected");

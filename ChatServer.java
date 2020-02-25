@@ -4,16 +4,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ChatServer {
-
-		// accept a connection
-		// respond to the request 
 		
 	private ServerSocket in;
+	//Array list to store the threads so I can print to them and kill them
 	private ArrayList<Thread> threadList = new ArrayList<Thread>();
 	private Thread t;
 		
 	public ChatServer(int port) {
 		try {
+			//Serversocket initialised in this constructor
 			in = new ServerSocket(port);
 		}catch (IOException e) {
 			e.printStackTrace();

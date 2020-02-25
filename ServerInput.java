@@ -3,18 +3,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ServerInput extends Thread {
+	//Buffered reader to take user input from server console
 	BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
 	ChatServer server;
 	
-	
+	//constructor to initialise the server in this class
 	public ServerInput(ChatServer server) {
 		this.server = server;
 	}
 
 	public void run() {
 		try {
+			//Read user input line by line
 			String command = userIn.readLine();
-			System.out.println(command);
+			//If the user enters the quit command then the threads are killed and the program exits
 			if (command.equals("QUIT")) {
 				server.killThreads();
 				System.exit(0);
