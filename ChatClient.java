@@ -6,72 +6,74 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class ChatClient {
-	
-	//Socket variable for establishing a connection to the server
+
+	// Socket variable for establishing a connection to the server
 	private Socket server;
 	private Thread t;
 
-	//Constructor that takes port and IP address of the server to connect to
+	// Constructor that takes port and IP address of the server to connect to
 	public ChatClient(String address, int port) {
-		//Tries to set up connection to server and declares a thread for reading server input
+		// Tries to set up connection to server and declare a thread for reading server input
 		try {
-			t = new ClientRead(address ,port);
-			server = new Socket(address ,port);
+			t = new ClientRead(address, port);
+			server = new Socket(address, port);
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			System.out.println("Could not connect to server, please check server details.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Could not connect to server, please check server details.");
 		}
 	}
-	
+
 	public void go() {
 		try {
-			//Set up a buffered reader to take user input from the console
+			// Set up a buffered reader to take user input from the console
 			BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
-			//Printwriter set up to send to server
+			// Printwriter set up to send to server
 			PrintWriter serverOut = new PrintWriter(server.getOutputStream(), true);
-			
-			//start thread for reading output from server and printing it to console
+
+			// start thread for reading output from server and printing it to console
 			t.start();
-			
-			while(true) { //while loop to take user input from console and send to server
+
+			while (true) { // while loop to take user input from console and send to server
 				String userInput = userIn.readLine();
 				serverOut.println(userInput);
 			}
 		} catch (IOException e) {
+			System.out.println("IO error caused by server connection or console input");
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			try {
 				server.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Could not close connection to server");
+			} catch (NullPointerException e) {
+				System.out.println("Could not close connection to server, the connection may already be closed");
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
-		//variables for port and address with default values
+		// variables for port and address with default values
 		int port = 14001;
-		String addr  = "localhost";
-		//loop through arguments to find valid arguments
-		for (int i=0; i<args.length-1; i++) {
-			//if statement to check for a port argument
+		String addr = "localhost";
+		// loop through arguments to find valid arguments
+		for (int i = 0; i < args.length - 1; i++) {
+			// if statement to check for a port argument
 			if (args[i].equals("-ccp")) {
 				try {
-		            port = Integer.parseInt(args[i + 1]);
-		        } catch (NumberFormatException e) {
-		            System.out.println("Invalid port");
-		        }
+					port = Integer.parseInt(args[i + 1]);
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid port");
+				}
 			}
-			//if statement to check for an address argument
+			// if statement to check for an address argument
 			else if (args[i].equals("-cca")) {
-				addr = args[i+1];
+				addr = args[i + 1];
+			} else {
+				System.out.println("Invalid argument");
 			}
-		    else {
-		        System.out.println("Invalid argument");
-		    }
 		}
+		// Instantiates chat server with parameters gathered above or defaults
 		new ChatClient(addr, port).go();
 	}
 }

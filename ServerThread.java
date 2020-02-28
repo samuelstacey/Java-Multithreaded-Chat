@@ -4,58 +4,45 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ServerThread extends Thread{
+//Class extends thread so that multithreaded functionality can be used
+public class ServerThread extends Thread {
 
 	private Socket socket;
 	private ChatServer server;
 	PrintWriter clientOut;
-	/**
-	 * Constructor for server thread
-	 * @param clientSocket
-	 * 		clientSocket used to input/output to client
-	 */
+
+	// constructor to initialise socket and server in this class
 	public ServerThread(Socket clientSocket, ChatServer chatServer) {
 		socket = clientSocket;
 		this.server = chatServer;
 	}
-	
+
 	public void run() {
 		try {
-			//Input stream reader reads the data coming from the client
+			// Input stream reader reads the data coming from the client
 			InputStreamReader inpReader = new InputStreamReader(socket.getInputStream());
-			//Used to put data input from client into a readable format
+			// Used to put data input from client into a readable format
 			BufferedReader clientIn = new BufferedReader(inpReader);
-			//Used to write output data to the client
+			// Used to write output data to the client
 			clientOut = new PrintWriter(socket.getOutputStream(), true);
-			
-			//While loop used to take any input from the client, need to ad terminating condition
-			while(true) {
+
+			// While loop used to take any input from the client
+			while (true) {
 				String userInput = clientIn.readLine();
-				if (userInput == "q") { //to quit
-						break;
-				}	
+				// The input is sent to all clients via the ChatServer class
 				server.sendToAll(userInput);
-				Thread.sleep(50);
 			}
 		} catch (IOException e1) {
+			// Server output if client disconnects
 			System.out.println("Client Disconnected");
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			System.out.println("interruptd");
-			currentThread().interrupt();
 		}
-    }
-	
-	
-	/**
-     * Prints a message to the client.
-     * @param toPrint
-     * 		the string to be printed to the client
-     */
-	public void printString(String toPrint) {
-			clientOut.println(toPrint);
-			//used to force to print
-			clientOut.flush();
 	}
-	
+
+	public void printString(String toPrint) {
+		// Prints string when called by ChatServer class
+		clientOut.println(toPrint);
+		// used to force to print
+		clientOut.flush();
+	}
+
 }
